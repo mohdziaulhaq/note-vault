@@ -16,18 +16,9 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/contact").permitAll()
-                // permit some public patterns like /public/contact and /public/home
-//                .requestMatchers("/public/**").permitAll()
-                // deny some patterns
-//                .requestMatchers("/admin/**").denyAll()
-                .anyRequest().authenticated());
+        http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
-        //http.csrf(csrf -> csrf.disable());
         //http.formLogin(withDefaults());
-        http.sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.httpBasic(withDefaults());
         return http.build();
     }
