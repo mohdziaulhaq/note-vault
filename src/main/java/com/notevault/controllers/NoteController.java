@@ -1,5 +1,6 @@
 package com.notevault.controllers;
 
+import com.notevault.dto.NoteRequest;
 import com.notevault.models.Note;
 import com.notevault.services.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +18,25 @@ public class NoteController {
     private NoteService noteService;
 
     @PostMapping
-    public Note createNote(@RequestBody String content, @AuthenticationPrincipal UserDetails userDetails) {
+    public Note createNote(@RequestBody NoteRequest noteRequest, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         System.out.println("USER DETAILS: "+username);
-        return noteService.createNoteForUser(username, content);
+        return noteService.createNoteForUser(username, noteRequest.getTitle(),noteRequest.getContent());
     }
 
     @GetMapping
     public List<Note> getNotesForUser(@AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println("ENTERED GET ENDPOINT");
         String username = userDetails.getUsername();
         System.out.println("USER DETAILS: "+username);
-        return noteService.getAllNotesForUser(username);
+        List<Note> notes = noteService.getAllNotesForUser(username);
+        return notes;
     }
 
     @PutMapping("/{noteId}")
-    public Note updateNote (@PathVariable Long noteId, @RequestBody String content, @AuthenticationPrincipal UserDetails userDetails) {
+    public Note updateNote (@PathVariable Long noteId, @RequestBody NoteRequest noteRequest, @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
-        return noteService.updateNoteForUser(noteId, username, content);
+        return noteService.updateNoteForUser(noteId, username, noteRequest.getTitle(), noteRequest.getContent());
     }
 
     @DeleteMapping("/{noteId}")
