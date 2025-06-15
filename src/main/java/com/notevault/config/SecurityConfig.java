@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -22,6 +23,8 @@ public class SecurityConfig {
                 // deny some patterns
 //                .requestMatchers("/admin/**").denyAll()
                 .anyRequest().authenticated());
+        http.csrf(AbstractHttpConfigurer::disable);
+        //http.csrf(csrf -> csrf.disable());
         //http.formLogin(withDefaults());
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
