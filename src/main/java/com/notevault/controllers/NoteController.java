@@ -1,6 +1,6 @@
 package com.notevault.controllers;
 
-import com.notevault.dto.NoteRequest;
+import com.notevault.dtos.NoteRequest;
 import com.notevault.models.Note;
 import com.notevault.services.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
