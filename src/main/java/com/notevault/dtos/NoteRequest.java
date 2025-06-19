@@ -1,4 +1,4 @@
-package com.notevault.dto;
+package com.notevault.dtos;
 
 public class NoteRequest {
     private String title;
