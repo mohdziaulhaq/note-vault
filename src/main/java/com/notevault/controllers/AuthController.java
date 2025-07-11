@@ -154,4 +154,10 @@ public class AuthController {
 
         return new ResponseEntity<>(userInfoResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/username")
+    public ResponseEntity<?> getUsername(@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername();
+        return new ResponseEntity<>(username, HttpStatus.OK);
+    }
 }
