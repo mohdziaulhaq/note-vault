@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -16,6 +17,23 @@ public class NoteController {
 
     @Autowired
     private NoteService noteService;
+
+    //mock get notes for testing frontend
+    @GetMapping("/fake")
+    public List<Note> getMockNotes() {
+
+        Note note1 = new Note();
+        note1.setTitle("Note 1");
+        note1.setContent("Note 1 content");
+        note1.setOwnerUsername("Ziaa");
+        note1.setId(11232434L);
+        Note note2 = new Note();
+        note1.setId(11232734L);
+        note2.setTitle("Note 2");
+        note2.setContent("Note 2 content");
+        note2.setOwnerUsername("Zia");
+        return Arrays.asList(note1, note2);
+    }
 
     @PostMapping
     public Note createNote(@RequestBody NoteRequest noteRequest, @AuthenticationPrincipal UserDetails userDetails) {
