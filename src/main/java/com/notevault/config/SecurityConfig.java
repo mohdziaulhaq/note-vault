@@ -48,25 +48,57 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+//    @Bean
+//    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(
+//                csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//                        .ignoringRequestMatchers("/api/auth/public/**")
+//        );
+//        http.authorizeHttpRequests((requests) -> requests
+//                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//                .requestMatchers("/api/auth/public/**").permitAll()
+//                .requestMatchers("/api/csrf-token").permitAll()
+//                .anyRequest().authenticated());
+//
+//        http.exceptionHandling(exception
+//                -> exception.authenticationEntryPoint(unauthorizedHandler));
+//        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.formLogin(withDefaults());
+//        http.httpBasic(withDefaults());
+//        return http.build();
+//    }
+
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(
-                csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/auth/public/**")
+        http.csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .ignoringRequestMatchers(
+                        "/api/auth/public/**",
+//                        "/api/notes/**",            // 👈 add this line
+                        "/api/csrf-token"
+                )
         );
-        http.authorizeHttpRequests((requests) -> requests
+
+        http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/auth/public/**").permitAll()
+//                .requestMatchers("/api/notes/**").permitAll()  // 👈 allow unauthenticated access to /api/notes
                 .requestMatchers("/api/csrf-token").permitAll()
-                .anyRequest().authenticated());
+                .anyRequest().authenticated()
+        );
 
-        http.exceptionHandling(exception
-                -> exception.authenticationEntryPoint(unauthorizedHandler));
+        http.exceptionHandling(exception ->
+                exception.authenticationEntryPoint(unauthorizedHandler)
+        );
+
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
+
         return http.build();
     }
+
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
