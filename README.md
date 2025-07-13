@@ -1,4 +1,4 @@
-# NOTE-VAULT-BACKEND
+# NOTE-VAULT-SPRING
 
 *Secure Backend for Seamless Note Management*
 
@@ -15,6 +15,7 @@ Note Vault Spring is a secure and efficient backend API service built with Sprin
 ## Technologies Used
 
 * Spring Boot (Security, JPA, Web)
+* Spring Security (JWT, AuthenticationManager, PasswordEncoder, Filters)
 * MySQL
 * Hibernate (JPA Implementation)
 * JWT Authentication
@@ -22,11 +23,12 @@ Note Vault Spring is a secure and efficient backend API service built with Sprin
 * Maven
 * Docker
 
-## Why note-vault?
+## Why note-vault-spring?
 
 This backend provides all essential features to support a modern note-taking app securely and reliably:
 
 * 🔒 **Secure Auth**: JWT authentication with password encryption and optional 2FA
+* 🔐 **Spring Security Core**: Configurable filters, roles, and authentication flows
 * 📄 **Note CRUD**: Create, view, update, and delete personal notes
 * ⚙️ **Role-Based Access**: Admin and user-level access control
 * 🚀 **RESTful APIs**: Cleanly structured and easy to consume
@@ -41,6 +43,7 @@ This backend provides all essential features to support a modern note-taking app
     * [Installation](#installation)
     * [Running the App](#running-the-app)
     * [Docker Deployment](#docker-deployment)
+* [Spring Security](#spring-security)
 * [API Endpoints](#api-endpoints)
 * [Live Demo](#live-demo)
 * [Learnings](#learnings)
@@ -110,9 +113,27 @@ ENTRYPOINT ["java", "-jar", "note-vault-0.0.1-SNAPSHOT.jar"]
 Then build and run:
 
 ```bash
-docker build -t note-vault-backend .
-docker run -p 8080:8080 note-vault-backend
+docker build -t note-vault .
+docker run -p 8080:8080 note-vault
 ```
+
+## Spring Security
+
+The application uses Spring Security to:
+
+* Protect APIs with JWT authentication and Authorization headers
+* Restrict routes using `hasRole('ADMIN')`, `hasRole('USER')`, etc.
+* Authenticate credentials with custom `UserDetailsService`
+* Encode passwords using `BCryptPasswordEncoder`
+* Filter requests using custom JWT filters (`AuthTokenFilter`)
+* Handle stateless session with `SecurityFilterChain`
+
+**Highlights:**
+
+* Stateless JWT-based authentication
+* Spring Security configuration with `SecurityFilterChain`
+* Login and signup endpoints excluded from auth (`permitAll()`)
+* CORS and CSRF configured to support frontend
 
 ## API Endpoints
 
@@ -138,9 +159,9 @@ Use the above links to test the app UI or hit backend APIs via Postman or curl.
 This backend project helped me:
 
 * Implement secure JWT token authentication and 2FA integration
-* Use Spring Security with custom `UserDetailsService`
+* Configure and customize Spring Security for real-world flows
+* Use `UserDetailsService` and `AuthenticationManager` effectively
 * Define and enforce role-based route access
-* Structure a production-ready Spring Boot project
 * Manage MySQL connection in production environments (via Docker & Render)
 * Handle CORS for cross-origin communication with frontend
 * Write clean, maintainable REST APIs with exception handling
@@ -164,4 +185,4 @@ Have questions, issues, or feedback? [Open an issue on GitHub](https://github.co
 
 ---
 
-*Built with ❤️ using Spring Boot and Docker*
+*Built with ❤️ using Spring Boot, Spring Security, and Docker*
