@@ -22,7 +22,7 @@ Note Vault Spring is a secure and efficient backend API service built with Sprin
 * Maven
 * Docker
 
-## Why note-vault-spring?
+## Why note-vault?
 
 This backend provides all essential features to support a modern note-taking app securely and reliably:
 
