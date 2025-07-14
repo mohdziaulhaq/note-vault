@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -75,7 +76,8 @@ public class SecurityConfig {
                 .ignoringRequestMatchers(
                         "/api/auth/public/**",
 //                        "/api/notes/**",            // 👈 add this line
-                        "/api/csrf-token"
+                        "/api/csrf-token",
+                        HttpMethod.OPTIONS.name() // added to solve preflight issue from browser
                 )
         );
 
@@ -84,6 +86,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/public/**").permitAll()
 //                .requestMatchers("/api/notes/**").permitAll()  // 👈 allow unauthenticated access to /api/notes
                 .requestMatchers("/api/csrf-token").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
         );
 
