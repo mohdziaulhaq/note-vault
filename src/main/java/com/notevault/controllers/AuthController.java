@@ -8,6 +8,7 @@ import com.notevault.repositories.RoleRepository;
 import com.notevault.repositories.UserRepository;
 import com.notevault.security.jwt.JwtUtils;
 import com.notevault.services.UserService;
+import com.notevault.utils.EmailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -162,6 +163,7 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(@RequestParam String email){
         try{
             userService.generarePasswordResetToken(email);
+            return  ResponseEntity.ok(new MessageResponse("Password reset email sent successfully"));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new MessageResponse("Error sending password reset email"));
