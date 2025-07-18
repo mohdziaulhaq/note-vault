@@ -2,25 +2,36 @@ package com.notevault.services.impl;
 
 import com.notevault.dtos.UserDTO;
 import com.notevault.enums.AppRole;
+import com.notevault.models.PasswordResetToken;
 import com.notevault.models.Role;
 import com.notevault.models.User;
+import com.notevault.repositories.PasswordResetTokenRepository;
 import com.notevault.repositories.RoleRepository;
 import com.notevault.repositories.UserRepository;
 import com.notevault.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Override
     public void updateUserRole(Long userId, String roleName) {
@@ -50,6 +61,35 @@ public class UserServiceImpl implements UserService {
     public User findByUsername(String username) {
         Optional<User> user = userRepository.findByUserName(username);
         return user.orElseThrow(() -> new RuntimeException("User with username " + username + " not found"));
+    }
+
+    @Override
+    public void updatePassword(Long userId, String newPassword) {
+        try{
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> new RuntimeException("User with id " + userId + " not found")
+            );
+            user.setPassword(newPassword);
+            userRepository.save(user);
+        }catch (RuntimeException e){
+            new RuntimeException("Failed to update password");
+        }
+    }
+
+    @Override
+    public void generarePasswordResetToken(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new RuntimeException("User with email " + email + " not found")
+        );
+        String token = UUID.randomUUID().toString();
+        Instant expiryDate = Instant.now().plus(24, ChronoUnit.HOURS);
+
+        PasswordResetToken resetToken = new PasswordResetToken(token,expiryDate, user);
+        passwordResetTokenRepository.save(resetToken);
+
+        String resetUrl = frontendUrl+"reset-password?token="+token;
+
+
     }
 
     private UserDTO convertToDto(User user) {
