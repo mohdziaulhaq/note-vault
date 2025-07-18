@@ -1,9 +1,6 @@
 package com.notevault.controllers;
 
-import com.notevault.dtos.LoginRequest;
-import com.notevault.dtos.LoginResponse;
-import com.notevault.dtos.SignUpRequest;
-import com.notevault.dtos.UserInfoResponse;
+import com.notevault.dtos.*;
 import com.notevault.enums.AppRole;
 import com.notevault.models.Role;
 import com.notevault.models.User;
@@ -159,5 +156,15 @@ public class AuthController {
     public ResponseEntity<?> getUsername(@AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         return new ResponseEntity<>(username, HttpStatus.OK);
+    }
+
+    @PostMapping("/public/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email){
+        try{
+            userService.generarePasswordResetToken(email);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error sending password reset email"));
+        }
     }
 }
