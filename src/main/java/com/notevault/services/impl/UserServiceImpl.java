@@ -9,6 +9,7 @@ import com.notevault.repositories.PasswordResetTokenRepository;
 import com.notevault.repositories.RoleRepository;
 import com.notevault.repositories.UserRepository;
 import com.notevault.services.UserService;
+import com.notevault.utils.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public void updateUserRole(Long userId, String roleName) {
@@ -87,7 +91,8 @@ public class UserServiceImpl implements UserService {
         PasswordResetToken resetToken = new PasswordResetToken(token,expiryDate, user);
         passwordResetTokenRepository.save(resetToken);
 
-        String resetUrl = frontendUrl+"reset-password?token="+token;
+        String resetUrl = frontendUrl+"/reset-password?token="+token;
+        emailService.sendPasswordResetEmail(email, resetUrl);
 
 
     }
