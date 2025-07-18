@@ -12,6 +12,7 @@ import com.notevault.services.UserService;
 import com.notevault.utils.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -36,6 +37,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void updateUserRole(Long userId, String roleName) {
@@ -95,6 +98,30 @@ public class UserServiceImpl implements UserService {
         emailService.sendPasswordResetEmail(email, resetUrl);
 
 
+    }
+
+    @Override
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token).orElseThrow(
+                () -> new RuntimeException("Invalid password reset token")
+        );
+
+        //check if used
+        if(resetToken.isUsed()){
+            throw new RuntimeException("Password reset token is used");
+        }
+        //check if expired
+        if(resetToken.getExpiryDate().isBefore(Instant.now())){
+            throw new RuntimeException("Token provided is expired. Please request new password");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // set token as used
+        resetToken.setUsed(true);
+        passwordResetTokenRepository.save(resetToken);
     }
 
     private UserDTO convertToDto(User user) {

@@ -14,4 +14,6 @@ public interface UserService {
     void updatePassword(Long userId, String newPassword);
 
     void generarePasswordResetToken(String email);
+
+    void resetPassword(String token, String newPassword);
 }
