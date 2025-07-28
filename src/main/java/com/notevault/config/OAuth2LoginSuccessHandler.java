@@ -22,17 +22,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 // THE OAUTH FLOW
-// To login .. user clicks on Login with github, frontend calls the below url
+// To login .. user clicks on Login with github/google button, frontend calls the below url
 // http://localhost:8080/oauth2/authorization/github
+//  http://localhost:8080/oauth2/authorization/google
 
-// Redirect after successful login from Github (github calls below backend url )Authorization callback URL
-// http://localhost:8080/login/oauth2/code/github (backend)
-//
+// Redirect after successful login from Github/Google (github/google calls below backend url )
+// http://localhost:8080/login/oauth2/code/github (github) Authorization callback URL
+// http://localhost:8080/login/oauth2/code/github (google) Authorised redirect URI
+
 // From Backend to React (after successfull Oauth2 login)
 // http://localhost:3000/oauth2/redirect
 
@@ -136,6 +136,13 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
         String email = (String) attributes.get("email");
         System.out.println("OAuth2LoginSuccessHandler: " + username + " : " + email);
 
+        User user = userService.findByEmail(email).orElseThrow( () -> new RuntimeException("User not found"));
+
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>(
+                oAuth2User.getAuthorities().stream().map(
+                        grantedAuthority -> new SimpleGrantedAuthority(grantedAuthority.getAuthority()))
+                        .collect(Collectors.toSet()));
+        authorities.add(new SimpleGrantedAuthority(user.getRole().getRoleName().name()));
         //Create UserDetailsImpl instance
         UserDetailsImpl userDetails = new UserDetailsImpl(
                 null,
@@ -143,8 +150,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
                 email,
                 null,
                 false,
-                oAuth2User.getAuthorities().stream()
-                        .map(authority -> new SimpleGrantedAuthority(authority.getAuthority())).collect(Collectors.toList())
+                authorities
         );
         //Generate JWT token
         String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
