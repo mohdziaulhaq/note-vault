@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 // Redirect after successful login from Github/Google (github/google calls below backend url )
 // http://localhost:8080/login/oauth2/code/github (github) Authorization callback URL
-// http://localhost:8080/login/oauth2/code/github (google) Authorised redirect URI
+// http://localhost:8080/login/oauth2/code/google (google) Authorised redirect URI
 
 // From Backend to React (after successfull Oauth2 login)
 // http://localhost:3000/oauth2/redirect
